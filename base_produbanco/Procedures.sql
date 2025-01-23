@@ -43,49 +43,54 @@ $$;
 
 -- Añadir Clientes
 
-CREATE OR REPLACE FUNCTION añadir_cliente(nombres VARCHAR(100), apellidos VARCHAR(100), email VARCHAR(100), cedula CHAR(10)) 
-RETURNS VOID AS $$
+CREATE OR REPLACE PROCEDURE añadir_cliente(nombres VARCHAR(100), apellidos VARCHAR(100), email VARCHAR(100), cedula CHAR(10)) 
+LANGUAGE plpgsql
+AS $$
 BEGIN
     INSERT INTO clientes (nombres, apellidos, email, cedula)
     VALUES (nombres, apellidos, email, cedula);
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Crear cuenta
 
-CREATE OR REPLACE FUNCTION crear_cuenta(client_id INT, tipo_cuenta TEXT) 
-RETURNS VOID AS $$
+CREATE OR REPLACE PROCEDURE crear_cuenta(client_id INT, tipo_cuenta TEXT) 
+LANGUAGE plpgsql
+AS $$
 BEGIN
     INSERT INTO cuentas (client_id, tipo_cuenta)
     VALUES (client_id, tipo_cuenta);
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Asignar Tarjeta
 
-CREATE OR REPLACE FUNCTION asignar_tarjeta(client_id INT, cuenta_id INT, pin CHAR(4)) 
-RETURNS VOID AS $$
+CREATE OR REPLACE PROCEDURE asignar_tarjeta(client_id INT, cuenta_id INT, pin CHAR(4)) 
+LANGUAGE plpgsql
+AS $$
 BEGIN
     INSERT INTO tarjetas (client_id, cuenta_id, pin)
     VALUES (client_id, cuenta_id, pin);
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Cambio de pin
 
-CREATE OR REPLACE FUNCTION cambiar_pin(tarjeta_id INT, nuevo_pin CHAR(4)) 
-RETURNS VOID AS $$
+CREATE OR REPLACE PROCEDURE cambiar_pin(tarjeta_id INT, nuevo_pin CHAR(4)) 
+LANGUAGE plpgsql
+AS $$
 BEGIN
     UPDATE tarjetas
     SET pin = nuevo_pin, pin_cambiado = TRUE
     WHERE tarjeta_id = tarjeta_id;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Retiros
 
-CREATE OR REPLACE FUNCTION retiro(tarjeta_id INT, monto NUMERIC) 
-RETURNS VOID AS $$
+CREATE OR REPLACE PROCEDURE retiro(tarjeta_id INT, monto NUMERIC) 
+LANGUAGE plpgsql
+AS $$
 DECLARE
     balance_actual NUMERIC;
 BEGIN
@@ -106,19 +111,20 @@ BEGIN
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
     VALUES (cuenta_id, 'retiro', monto);
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Depósitos
 
-CREATE OR REPLACE FUNCTION deposito(cuenta_id INT, monto NUMERIC) 
-RETURNS VOID AS $$
+CREATE OR REPLACE PROCEDURE deposito(cuenta_id INT, monto NUMERIC) 
+LANGUAGE plpgsql
+AS $$
 BEGIN
     UPDATE cuentas SET balance = balance + monto WHERE cuenta_id = cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
     VALUES (cuenta_id, 'deposito', monto);
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Inicio de sesión
 
