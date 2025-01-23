@@ -39,7 +39,6 @@ CREATE TABLE transacciones (
     transaccion_id SERIAL PRIMARY KEY,
     cuenta_id INT REFERENCES cuentas(cuenta_id),
     tipo_transaccion INT REFERENCES catalogo(catalogo_id),
-    monto NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
-    hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    cuenta_id INT REFERENCES cuentas(cuenta_id)
+    monto NUMERIC(12, 2) NOT NULL CHECK (monto > 0),
+    hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
