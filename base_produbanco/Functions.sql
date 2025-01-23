@@ -69,7 +69,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Crear el trigger
-DROP TRIGGER IF EXISTS validate_cedula_trigger ON socio;
+DROP TRIGGER IF EXISTS validate_cedula_trigger ON clientes;
 CREATE TRIGGER validate_cedula_trigger
     BEFORE INSERT OR UPDATE ON clientes
     FOR EACH ROW
