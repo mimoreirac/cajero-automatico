@@ -1,5 +1,46 @@
 -- Procedures
 
+
+-- Ingresar catalogos
+
+CREATE OR REPLACE PROCEDURE ingresar_catalogo(nombre VARCHAR(100))
+LANGUAGE plpgsql
+AS $$
+BEGIN
+	IF EXISTS (SELECT nombre_catalogo FROM catalogo WHERE nombre_catalogo = nombre) THEN
+		RAISE EXCEPTION 'El catalogo % ya existe.', nombre;
+	END IF;
+	
+	INSERT INTO catalogo(nombre_catalogo)
+	VALUES(
+		nombre
+	);
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE ingresar_item_catalogo(item VARCHAR(100), menu VARCHAR(100))
+LANGUAGE plpgsql
+AS $$
+DECLARE
+	raiz INTEGER;
+BEGIN
+	IF NOT EXISTS (SELECT nombre_catalogo FROM catalogo WHERE nombre_catalogo = menu) THEN
+		RAISE EXCEPTION 'El catalogo % no existe.', menu;
+	END IF;
+	
+	SELECT id_catalogo INTO raiz
+	FROM catalogo
+	WHERE nombre_catalogo = menu;
+	
+	INSERT INTO catalogo(nombre_item, raiz_id)
+	VALUES(
+		item,
+		raiz
+	);
+END;
+$$;
+
+
 -- Añadir Clientes
 
 CREATE OR REPLACE FUNCTION añadir_cliente(nombres VARCHAR(100), apellidos VARCHAR(100), email VARCHAR(100), cedula CHAR(10)) 

@@ -3,9 +3,9 @@
 -- Catálogo
 CREATE TABLE catalogo (
     catalogo_id SERIAL PRIMARY KEY,
-    nombre_catalogo VARCHAR(100) UNIQUE NOT NULL, 
-    nombre_item VARCHAR(100) UNIQUE NOT NULL, 
-    raiz_id INT REFERENCES catalogo(catalogo_id)
+    nombre_catalogo VARCHAR(100) UNIQUE, 
+    nombre_item VARCHAR(100) UNIQUE, 
+    raiz_id INT REFERENCES catalogo(catalogo_id) DEFAULT NULL
 );
 
 -- Clientes
