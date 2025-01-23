@@ -103,7 +103,7 @@ BEFORE INSERT ON catalogo
 FOR EACH ROW
 EXECUTE FUNCTION convierte_mayusculas();
 
--- For clientes
+-- Para tabla clientes
 CREATE TRIGGER before_insert_clientes
 BEFORE INSERT ON clientes
 FOR EACH ROW
