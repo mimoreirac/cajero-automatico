@@ -1,7 +1,14 @@
 -- Tablas de la base de datos
 
--- Clientes
+-- Catálogo
+CREATE TABLE catalogo (
+    catalogo_id SERIAL PRIMARY KEY,
+    nombre_catalogo VARCHAR(100) UNIQUE NOT NULL, 
+    nombre_item VARCHAR(100) UNIQUE NOT NULL, 
+    raiz_id INT REFERENCES catalogo(catalogo_id)
+);
 
+-- Clientes
 CREATE TABLE clientes (
     client_id SERIAL PRIMARY KEY,
     nombres VARCHAR(100) NOT NULL,
@@ -14,7 +21,7 @@ CREATE TABLE clientes (
 CREATE TABLE cuentas (
     cuenta_id SERIAL PRIMARY KEY,
     client_id INT REFERENCES clientes(client_id),
-    tipo_cuenta TEXT CHECK (tipo_cuenta IN ('ahorros', 'corriente')),
+    tipo_cuenta INT REFERENCES catalogo(catalogo_id),
     balance NUMERIC(12, 2) DEFAULT 0 CHECK (balance >= 0)
 );
 
@@ -31,7 +38,7 @@ CREATE TABLE tarjetas (
 CREATE TABLE transacciones (
     transaccion_id SERIAL PRIMARY KEY,
     cuenta_id INT REFERENCES cuentas(cuenta_id),
-    tipo_transaccion TEXT CHECK (tipo_transaccion IN ('retiro', 'deposito', 'pago')),
+    tipo_transaccion INT REFERENCES catalogo(catalogo_id),
     monto NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
     hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     cuenta_id INT REFERENCES cuentas(cuenta_id)
