@@ -79,3 +79,32 @@ CREATE TRIGGER validate_cedula_trigger
 ALTER TABLE clientes
 ADD CONSTRAINT check_cedula
 CHECK (validate_cedula(cedula));
+
+
+-- Función para convertir a mayúsculas
+
+CREATE OR REPLACE FUNCTION convierte_mayusculas() 
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_TABLE_NAME = 'catalogo' THEN
+        NEW.nombre_catalogo := UPPER(NEW.nombre_catalogo);
+        NEW.nombre_item := UPPER(NEW.nombre_item);
+    ELSIF TG_TABLE_NAME = 'clientes' THEN
+        NEW.nombres := UPPER(NEW.nombres);
+        NEW.apellidos := UPPER(NEW.apellidos);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Para tabla catalogo
+CREATE TRIGGER before_insert_catalogo
+BEFORE INSERT ON catalogo
+FOR EACH ROW
+EXECUTE FUNCTION convierte_mayusculas();
+
+-- For clientes
+CREATE TRIGGER before_insert_clientes
+BEFORE INSERT ON clientes
+FOR EACH ROW
+EXECUTE FUNCTION convierte_mayusculas();
