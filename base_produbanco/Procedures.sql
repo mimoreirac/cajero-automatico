@@ -109,7 +109,7 @@ BEGIN
     UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
-    VALUES (cuenta_id, 'retiro', monto);
+    VALUES (cuenta_id, 'RETIRO', monto);
 END;
 $$;
 
@@ -122,7 +122,20 @@ BEGIN
     UPDATE cuentas SET balance = balance + monto WHERE cuenta_id = cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
-    VALUES (cuenta_id, 'deposito', monto);
+    VALUES (cuenta_id, 'DEPOSITO', monto);
+END;
+$$;
+
+-- Pagos
+
+CREATE OR REPLACE PROCEDURE pagos(cuenta_id INT, servicio TEXT, monto NUMERIC)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = cuenta_id;
+
+    INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
+    VALUES (cuenta_id, 'PAGO', monto);
 END;
 $$;
 
