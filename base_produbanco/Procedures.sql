@@ -28,7 +28,7 @@ BEGIN
 		RAISE EXCEPTION 'El catalogo % no existe.', menu;
 	END IF;
 	
-	SELECT id_catalogo INTO raiz
+	SELECT catalogo_id INTO raiz
 	FROM catalogo
 	WHERE nombre_catalogo = menu;
 	
@@ -54,12 +54,15 @@ $$;
 
 -- Crear cuenta
 
-CREATE OR REPLACE PROCEDURE crear_cuenta(client_id INT, tipo_cuenta TEXT) 
+CREATE OR REPLACE PROCEDURE crear_cuenta(client_id INT, tipo_cuenta VARCHAR) 
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    tipo INTEGER;
 BEGIN
+    SELECT catalogo_id INTO tipo FROM catalogo WHERE nombre_item = tipo_cuenta;
     INSERT INTO cuentas (client_id, tipo_cuenta)
-    VALUES (client_id, tipo_cuenta);
+    VALUES (client_id, tipo);
 END;
 $$;
 
@@ -109,7 +112,7 @@ BEGIN
     UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
-    VALUES (cuenta_id, 'RETIRO', monto);
+    VALUES (cuenta_id, 5, monto);
 END;
 $$;
 
@@ -122,7 +125,7 @@ BEGIN
     UPDATE cuentas SET balance = balance + monto WHERE cuenta_id = cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
-    VALUES (cuenta_id, 'DEPOSITO', monto);
+    VALUES (cuenta_id, 6, monto);
 END;
 $$;
 
@@ -135,7 +138,7 @@ BEGIN
     UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
-    VALUES (cuenta_id, 'PAGO', monto);
+    VALUES (cuenta_id, 7, monto);
 END;
 $$;
 
