@@ -6,7 +6,43 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from django.core.exceptions import ValidationError
 
+def validate_cedula(cedula):
+    """
+    Valida el número de cédula
+
+    Args:
+        cedula: String.
+
+    Returns:
+        True si la cédula es válida, False de otra manera.
+
+    Raises:
+        ValidationError: Si la cédula no es un string de 10 dígitos.
+    """
+    if not isinstance(cedula, str) or not cedula.isdigit() or len(cedula) != 10:
+        raise ValidationError("La cédula debe ser un número de 10 dígitos.")
+
+    sum_even = 0
+    sum_odd = 0
+    check_digit = int(cedula[9])
+
+    for i in range(9):
+        digit = int(cedula[i])
+        if (i + 1) % 2 == 0:
+            sum_even += digit
+        else:
+            temp = digit * 2
+            if temp > 9:
+                temp -= 9
+            sum_odd += temp
+
+    calculated_check = ((sum_odd + sum_even) // 10 + 1) * 10 - (sum_odd + sum_even)
+    if calculated_check == 10:
+        calculated_check = 0
+
+    return calculated_check == check_digit
 
 class Catalogo(models.Model):
     catalogo_id = models.AutoField(primary_key=True)
@@ -29,6 +65,14 @@ class Clientes(models.Model):
     class Meta:
         managed = False
         db_table = 'clientes'
+
+    def clean(self):
+        if not validate_cedula(self.cedula):
+            raise ValidationError({'cedula': "Cédula inválida."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Cuentas(models.Model):
