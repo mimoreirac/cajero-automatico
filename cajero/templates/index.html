@@ -13,7 +13,7 @@
   <div
     class="container col-sm-8 mt-4 d-flex flex-wrap justify-content-around"
   >
-    <a href="" class="card-link">
+    <a href="{% url 'cajero:deposit' %}" class="card-link">
       <div
         class="card flex-grow-0 flex-shrink-1 mx-3"
         style="width: 18rem; height: 100%; padding: 0"
@@ -36,7 +36,7 @@
         </div>
       </div>
     </a>
-    <a href="" class="card-link">
+    <a href="{% url 'cajero:withdrawal' %}" class="card-link">
       <div
         class="card flex-grow-0 flex-shrink-1 mx-3"
         style="width: 18rem; height: 100%; padding: 0"
@@ -59,7 +59,7 @@
         </div>
       </div>
     </a>
-    <a href="" class="card-link">
+    <a href="{% url 'cajero:payment' %}" class="card-link">
       <div
         class="card flex-grow-0 flex-shrink-1 mx-3"
         style="width: 18rem; height: 100%; padding: 0"
@@ -85,7 +85,7 @@
   </div>
   <br>
   <div class="container col-sm-8 mt-4 d-flex justify-content-center">
-    <a href="" class="card-link">
+    <a href="{% url 'cajero:check_balance' %}" class="card-link">
       <div
         class="card flex-grow-0 flex-shrink-1"
         style="width: 18rem; height: 100%; padding: 0"
