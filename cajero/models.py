@@ -74,6 +74,10 @@ class Clientes(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.nombres} {self.apellidos}"
+    
+
 
 class Cuentas(models.Model):
     cuenta_id = models.AutoField(primary_key=True)
@@ -84,6 +88,10 @@ class Cuentas(models.Model):
     class Meta:
         managed = False
         db_table = 'cuentas'
+
+    def __str__(self):
+        return self.cuenta_id
+    
 
 
 class Tarjetas(models.Model):
@@ -97,6 +105,10 @@ class Tarjetas(models.Model):
         managed = False
         db_table = 'tarjetas'
 
+    def __str__(self):
+        return self.tarjeta_id
+    
+
 
 class Transacciones(models.Model):
     transaccion_id = models.AutoField(primary_key=True)
@@ -108,3 +120,7 @@ class Transacciones(models.Model):
     class Meta:
         managed = False
         db_table = 'transacciones'
+
+    def __str__(self):
+        return f"{self.tipo_transaccion} por {self.monto}"
+    

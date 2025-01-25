@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test</title>
+    <link rel="stylesheet" href="{% static "bootstrap.min.css" %}"> <link
+    rel="stylesheet" href="{% static "styles.css" %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <img src="{% static "produbanco_logo.png" %}" alt="Logo" class="logo">
+      <div class="container d-flex flex-column align-items-center mt-5">
+        <div><h1 class="greeting">Hola</h1></div>
+        <div>
+          <h4 class="sub-greeting">¿Qué transacción deseas realizar?</h4>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div
+        class="container col-sm-8 mt-4 d-flex flex-wrap justify-content-around"
+      >
+        <a href="" class="card-link">
+          <div
+            class="card flex-grow-0 flex-shrink-1 mx-3"
+            style="width: 18rem; height: 100%; padding: 0"
+          >
+            <div
+              class="card-img-top d-flex justify-content-center align-items-center pt-2"
+            >
+              <i
+                class="fa-solid fa-money-bill-transfer fa-3x"
+                style="color: #34b539"
+              ></i>
+            </div>
+            <div class="card-body px-2 py-2">
+              <div
+                class="card-text d-flex flex-column justify-content-center align-items-center"
+              >
+                <p class="mt-0 mb-0">Depósito</p>
+                <p class="mt-0 mb-0 texto-resaltado">con tarjeta</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        <a href="" class="card-link">
+          <div
+            class="card flex-grow-0 flex-shrink-1 mx-3"
+            style="width: 18rem; height: 100%; padding: 0"
+          >
+            <div
+              class="card-img-top d-flex justify-content-center align-items-center pt-2"
+            >
+              <i
+                class="fa-regular fa-credit-card fa-3x"
+                style="color: #34b539"
+              ></i>
+            </div>
+            <div class="card-body px-2 py-2">
+              <div
+                class="card-text d-flex flex-column justify-content-center align-items-center"
+              >
+                <p class="mt-0 mb-0">Retiro</p>
+                <p class="mt-0 mb-0 texto-resaltado">con tarjeta</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        <a href="" class="card-link">
+          <div
+            class="card flex-grow-0 flex-shrink-1 mx-3"
+            style="width: 18rem; height: 100%; padding: 0"
+          >
+            <div
+              class="card-img-top d-flex justify-content-center align-items-center pt-2"
+            >
+              <i
+                class="fa-solid fa-faucet-drip fa-3x"
+                style="color: #34b539"
+              ></i>
+            </div>
+            <div class="card-body px-2 py-2">
+              <div
+                class="card-text d-flex flex-column justify-content-center align-items-center"
+              >
+                <p class="mt-0 mb-0">Pago</p>
+                <p class="mt-0 mb-0 texto-resaltado">de servicios</p>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <br>
+      <div class="container col-sm-8 mt-4 d-flex justify-content-center">
+        <a href="" class="card-link">
+          <div
+            class="card flex-grow-0 flex-shrink-1"
+            style="width: 18rem; height: 100%; padding: 0"
+          >
+            <div
+              class="card-img-top d-flex justify-content-center align-items-center pt-2"
+            >
+              <i class="fa-solid fa-question fa-3x" style="color: #34b539"></i>
+            </div>
+            <div class="card-body px-2 py-2">
+              <div
+                class="card-text d-flex flex-column justify-content-center align-items-center"
+              >
+                <p class="mt-0 mb-0">Consulta</p>
+                <p class="mt-0 mb-0 texto-resaltado">de saldos</p>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="container col-sm-8 mt-4 mb-0 d-flex justify-content-center fixed-bottom">
+        <div class="banner">
+          <img src="{% static "banner_publicidad.webp" %}" alt="Banner"
+          class="img-fluid rounded-top-corners">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
