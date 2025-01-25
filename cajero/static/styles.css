@@ -33,6 +33,7 @@
 
 .banner {
   width: 70%;
+  height: 200px;
   margin: 0 auto; /* Center the banner horizontally */
   border-radius: 15px 15px 0 0; /* Adjust the radius value as desired */
 }
