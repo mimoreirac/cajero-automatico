@@ -7,6 +7,21 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.db.models import Max
+
+class AccountNumberSequence:
+    @staticmethod
+    def get_next_account_number():
+        # Get the latest account number from the database
+        latest = Cuentas.objects.aggregate(Max('numero_cuenta'))['numero_cuenta__max']
+        if not latest:
+            # If no accounts exist, start with 0100000001
+            return '0100000001'
+        
+        # Extract the numeric part and increment
+        numeric_part = int(latest[2:]) + 1
+        # Format back to 10 digits (2 digit prefix + 8 digit number)
+        return f'01{numeric_part:08d}'
 
 def validate_cedula(cedula):
     """
@@ -54,6 +69,10 @@ class Catalogo(models.Model):
         managed = False
         db_table = 'catalogo'
 
+    def __str__(self):
+        return f"{self.nombre_catalogo}" if self.nombre_catalogo else f"{self.nombre_item}"
+    
+
 
 class Clientes(models.Model):
     client_id = models.AutoField(primary_key=True)
@@ -84,13 +103,20 @@ class Cuentas(models.Model):
     client = models.ForeignKey(Clientes, models.DO_NOTHING, blank=True, null=True)
     tipo_cuenta = models.ForeignKey(Catalogo, models.DO_NOTHING, db_column='tipo_cuenta', blank=True, null=True)
     balance = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
-
+    numero_cuenta = models.CharField(unique=True, max_length=10, blank=True,  # Allow blank in forms
+        default=AccountNumberSequence.get_next_account_number)
+    
     class Meta:
         managed = False
         db_table = 'cuentas'
 
     def __str__(self):
-        return self.cuenta_id
+        return f"Account {self.numero_cuenta}" if self.numero_cuenta else f"Account {self.cuenta_id}"
+    
+    def save(self, *args, **kwargs):
+        if not self.numero_cuenta:
+            self.numero_cuenta = AccountNumberSequence.get_next_account_number()
+        super().save(*args, **kwargs)
     
 
 
