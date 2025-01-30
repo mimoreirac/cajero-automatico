@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Su Saldo{% endblock title %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Información de su cuenta</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Saldo Actual</h5>
+            <p class="card-text display-4">${{ cuenta.balance }}</p>
+            <p class="card-text">
+                <small class="text-muted">Número de Cuenta: {{ cuenta.numero_cuenta }}</small>
+            </p>
+        </div>
+    </div>
+
+    {% if transactions %}
+        <h3 class="mb-3">Últimas Transacciones</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trans in transactions %}
+                    <tr>
+                        <td>{{ trans.hora|date:"d/m/Y H:i" }}</td>
+                        <td>{{ trans.tipo_transaccion }}</td>
+                        <td>${{ trans.monto }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'cajero:index' %}" class="btn btn-primary">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock content %}

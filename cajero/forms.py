@@ -27,3 +27,7 @@ class PaymentServiceForm(forms.Form):
 
 class PaymentAmountForm(forms.Form):
     amount = forms.DecimalField(label='Monto a Pagar', max_digits=12, decimal_places=2, min_value=0.01, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+
+class CheckBalanceForm(forms.Form):
+    card_number = forms.CharField(label='Número de Tarjeta', max_length=16, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    pin = forms.CharField(label='PIN', max_length=4, widget=forms.PasswordInput(attrs={'autocomplete': 'off'}))

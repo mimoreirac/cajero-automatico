@@ -4,8 +4,9 @@ from django.template import loader
 from django.db import connection, transaction
 from django.urls import reverse
 from django.contrib import messages
-from .forms import DepositAccountForm, DepositAmountForm, WithdrawalCardForm, WithdrawalAmountForm, PaymentServiceForm, PaymentAmountForm
-from .models import Cuentas, Clientes, Tarjetas, Catalogo
+from django.db.models import Q
+from .forms import DepositAccountForm, DepositAmountForm, WithdrawalCardForm, WithdrawalAmountForm, PaymentServiceForm, PaymentAmountForm, CheckBalanceForm
+from .models import Cuentas, Clientes, Tarjetas, Catalogo, Transacciones
 
 # Create your views here.
 def index(request):
@@ -194,4 +195,31 @@ def confirm_payment(request):
     })
 
 def check_balance(request):
-    return render(request, 'saldo.html')
+    if request.method == 'POST':
+        form = CheckBalanceForm(request.POST)
+        if form.is_valid():
+            card_number = form.cleaned_data['card_number']
+            pin = form.cleaned_data['pin']
+
+            # Validate card and PIN
+            try:
+                tarjeta = Tarjetas.objects.get(numero_tarjeta=card_number)
+                if tarjeta.check_pin(pin):
+                    # Get account balance and recent transactions
+                    cuenta = tarjeta.cuenta
+                    transactions = Transacciones.objects.filter(
+                        cuenta=cuenta
+                    ).order_by('-hora')[:10]  # Get last 10 transactions
+
+                    return render(request, 'saldo_mostrar.html', {
+                        'cuenta': cuenta,
+                        'transactions': transactions,
+                    })
+                else:
+                    form.add_error('pin', 'PIN incorrecto.')
+            except Tarjetas.DoesNotExist:
+                form.add_error('card_number', 'La tarjeta no existe.')
+    else:
+        form = CheckBalanceForm()
+
+    return render(request, 'saldo.html', {'form': form})
