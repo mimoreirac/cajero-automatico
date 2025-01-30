@@ -54,3 +54,54 @@
 .card:hover {
   background-color: #e7f7ed;
 }
+
+.form-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #34b539;
+  box-shadow: 0 0 0 0.2rem rgba(52, 181, 57, 0.25);
+  outline: 0;
+}
+
+select.form-control {
+  height: calc(1.5em + 1.5rem + 2px);
+}
+
+.btn-primary {
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.info-text {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
