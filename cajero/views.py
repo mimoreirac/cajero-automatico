@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
-from django.db import connection
-from .forms import DepositAccountForm, DepositAmountForm, WithdrawalCardForm, WithdrawalAmountForm
-from .models import Cuentas, Clientes
+from django.db import connection, transaction
+from django.urls import reverse
+from django.contrib import messages
+from .forms import DepositAccountForm, DepositAmountForm, WithdrawalCardForm, WithdrawalAmountForm, PaymentServiceForm, PaymentAmountForm
+from .models import Cuentas, Clientes, Tarjetas, Catalogo
 
 # Create your views here.
 def index(request):
@@ -37,6 +39,7 @@ def deposit(request):
 
     return render(request, 'depositos.html', {'form': form})
 
+@transaction.atomic
 def confirm_deposit(request):
     cuenta_id = request.session.get('cuenta_id')
     cedula = request.session.get('cedula')
@@ -63,16 +66,6 @@ def confirm_deposit(request):
 
     return render(request, 'deposito_confirmar.html', {'form': form, 'cuenta_id': cuenta_id, 'cedula': cedula})
 
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
-from django.template import loader
-from django.db import connection, transaction
-from django.urls import reverse
-from .forms import DepositAccountForm, DepositAmountForm, WithdrawalCardForm, WithdrawalAmountForm
-from .models import Cuentas, Clientes, Tarjetas
-from django.contrib import messages
-
-# ... (Your existing code for index, deposit, confirm_deposit)
 
 def withdrawal(request):
     if request.method == 'POST':
@@ -97,6 +90,7 @@ def withdrawal(request):
 
     return render(request, 'retiros.html', {'form': form})
 
+@transaction.atomic
 def confirm_withdrawal(request):
     card_number = request.session.get('card_number')
 
@@ -125,7 +119,79 @@ def confirm_withdrawal(request):
     return render(request, 'retiro_confirmar.html', {'form': form, 'card_number': card_number})
 
 def payment(request):
-    return render(request, 'pagos.html')
+    if request.method == 'POST':
+        form = PaymentServiceForm(request.POST)
+        if form.is_valid():
+            servicio = form.cleaned_data['servicio']
+            cedula = form.cleaned_data['cedula']
+            cuenta_id = form.cleaned_data['cuenta_id']
+
+            # Validar cedula y cuenta
+            try:
+                cuenta = Cuentas.objects.get(numero_cuenta=cuenta_id)
+                cliente = Clientes.objects.get(cedula=cedula)
+                if cuenta.client.client_id == cliente.client_id:
+                    # Guardar datos en la sesion y proceder a confirmar
+                    request.session['servicio'] = servicio
+                    request.session['cedula'] = cedula
+                    request.session['cuenta_id'] = cuenta_id
+                    return redirect('cajero:confirm_payment')
+                else:
+                    form.add_error(None, 'Los datos son incorrectos.')
+            except Cuentas.DoesNotExist:
+                form.add_error('cuenta_id', 'La cuenta no existe.')
+            except Clientes.DoesNotExist:
+                form.add_error('cedula', 'Cédula no existe.')
+    else:
+        form = PaymentServiceForm()
+
+    return render(request, 'pagos.html', {'form': form})
+
+@transaction.atomic
+def confirm_payment(request):
+    servicio = request.session.get('servicio')
+    cedula = request.session.get('cedula')
+    cuenta_id = request.session.get('cuenta_id')
+
+    if not servicio or not cedula or not cuenta_id:
+        return redirect('cajero:payment')
+
+    if request.method == 'POST':
+        form = PaymentAmountForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            cuenta = Cuentas.objects.get(numero_cuenta=cuenta_id)
+
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute('CALL pagos(%s, %s, %s);', 
+                                 [cuenta.cuenta_id, int(servicio), amount])
+                    
+                del request.session['servicio']
+                del request.session['cedula']
+                del request.session['cuenta_id']
+                return redirect('cajero:index')
+                
+            except Exception as e:
+                messages.error(request, f'Error en la transacción: {str(e)}')
+                servicio_nombre = dict(PaymentServiceForm.SERVICIO_CHOICES).get(int(servicio))
+                return render(request, 'pago_confirmar.html', {
+                    'form': form, 
+                    'servicio_nombre': servicio_nombre, 
+                    'cedula': cedula, 
+                    'cuenta_id': cuenta_id
+                })
+
+    else:
+        form = PaymentAmountForm()
+    
+    servicio_nombre = dict(PaymentServiceForm.SERVICIO_CHOICES).get(int(servicio))
+    return render(request, 'pago_confirmar.html', {
+        'form': form, 
+        'servicio_nombre': servicio_nombre, 
+        'cedula': cedula, 
+        'cuenta_id': cuenta_id
+    })
 
 def check_balance(request):
     return render(request, 'saldo.html')

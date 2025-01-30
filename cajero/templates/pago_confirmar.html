@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Confirmar Pago{% endblock title %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Confirmar Pago</h2>
+    <p>Servicio: {{ servicio_nombre }}</p>
+    <p>Número de Cuenta: {{ cuenta_id }}</p>
+    <p>Cédula: {{ cedula }}</p>
+
+    <form method="post" action="{% url 'cajero:confirm_payment' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="amount">Monto:</label>
+            {{ form.amount }}
+        </div>
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Confirmar Pago</button>
+    </form>
+</div>
+{% endblock content %}

@@ -10,5 +10,6 @@ urlpatterns = [
     path('retiros/', views.withdrawal, name='withdrawal'),
     path('retiros/confirmar/', views.confirm_withdrawal, name='confirm_withdrawal'),
     path('pagos/', views.payment, name='payment'),
+    path('pagos/confirmar', views.confirm_payment, name='confirm_payment'),
     path('saldo/', views.check_balance, name='check_balance'),
 ]
