@@ -91,14 +91,20 @@ $$;
 
 -- Retiros
 
-CREATE OR REPLACE PROCEDURE retiro(tarjeta_id INT, monto NUMERIC) 
+CREATE OR REPLACE PROCEDURE retiro(p_tarjeta_id INT, monto NUMERIC) 
 LANGUAGE plpgsql
 AS $$
 DECLARE
     balance_actual NUMERIC;
+    p_cuenta_id INT;
 BEGIN
+    SELECT cuenta_id INTO p_cuenta_id FROM tarjetas WHERE tarjeta_id = p_tarjeta_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'La tarjeta % no existe', p_tarjeta_id;
+    END IF;
     -- Chequea el saldo de la cuenta
-    SELECT balance INTO balance_actual FROM cuentas WHERE cuenta_id = cuenta_id;
+    SELECT balance INTO balance_actual FROM cuentas WHERE cuenta_id = p_cuenta_id;
     IF balance_actual < monto THEN
         RAISE EXCEPTION 'Fondos insuficientes';
     END IF;
@@ -109,10 +115,10 @@ BEGIN
     END IF;
 
     -- Retira y guarda la transacción
-    UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = cuenta_id;
+    UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = p_cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
-    VALUES (cuenta_id, 5, monto);
+    VALUES (p_cuenta_id, 5, monto);
 END;
 $$;
 
