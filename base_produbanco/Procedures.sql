@@ -143,7 +143,15 @@ $$;
 CREATE OR REPLACE PROCEDURE pagos(p_cuenta_id INT, p_servicio INT, monto NUMERIC)
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    balance_actual NUMERIC;
 BEGIN
+    -- Chequea el saldo de la cuenta
+    SELECT balance INTO balance_actual FROM cuentas WHERE cuenta_id = p_cuenta_id;
+    IF balance_actual < monto THEN
+        RAISE EXCEPTION 'Fondos insuficientes';
+    END IF;
+    
     UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
