@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
 from django.db import connection
-from .forms import DepositAccountForm, DepositAmountForm
+from .forms import DepositAccountForm, DepositAmountForm, WithdrawalCardForm, WithdrawalAmountForm
 from .models import Cuentas, Clientes
 
 # Create your views here.
@@ -63,8 +63,66 @@ def confirm_deposit(request):
 
     return render(request, 'deposito_confirmar.html', {'form': form, 'cuenta_id': cuenta_id, 'cedula': cedula})
 
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template import loader
+from django.db import connection, transaction
+from django.urls import reverse
+from .forms import DepositAccountForm, DepositAmountForm, WithdrawalCardForm, WithdrawalAmountForm
+from .models import Cuentas, Clientes, Tarjetas
+from django.contrib import messages
+
+# ... (Your existing code for index, deposit, confirm_deposit)
+
 def withdrawal(request):
-    return render(request, 'retiros.html')
+    if request.method == 'POST':
+        form = WithdrawalCardForm(request.POST)
+        if form.is_valid():
+            card_number = form.cleaned_data['card_number']
+            pin = form.cleaned_data['pin']
+
+            # Validar tarjeta y PIN
+            try:
+                tarjeta = Tarjetas.objects.get(numero_tarjeta=card_number)
+                if tarjeta.check_pin(pin):
+                    # Si el PIN es correcto, procede al retiro
+                    request.session['card_number'] = card_number
+                    return redirect('cajero:confirm_withdrawal')
+                else:
+                    form.add_error('pin', 'PIN incorrecto.')
+            except Tarjetas.DoesNotExist:
+                form.add_error('card_number', 'La tarjeta no existe.')
+    else:
+        form = WithdrawalCardForm()
+
+    return render(request, 'retiros.html', {'form': form})
+
+def confirm_withdrawal(request):
+    card_number = request.session.get('card_number')
+
+    if not card_number:
+        return redirect('cajero:withdrawal')
+
+    if request.method == 'POST':
+        form = WithdrawalAmountForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            tarjeta = Tarjetas.objects.get(numero_tarjeta=card_number)
+
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute('CALL retiro(%s, %s);', [tarjeta.tarjeta_id, amount])
+            except Exception as e:
+                messages.error(request, str(e))
+                return render(request, 'retiro_confirmar.html', {'form': form, 'card_number': card_number})
+
+            del request.session['card_number']
+            return redirect('cajero:index')  # Redirect to success page or index
+
+    else:
+        form = WithdrawalAmountForm()
+
+    return render(request, 'retiro_confirmar.html', {'form': form, 'card_number': card_number})
 
 def payment(request):
     return render(request, 'pagos.html')

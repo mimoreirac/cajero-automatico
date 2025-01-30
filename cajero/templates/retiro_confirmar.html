@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Confirmar Retiro{% endblock title %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Confirmar Retiro</h2>
+    <p>Número de Tarjeta: {{ card_number }}</p>
+
+    <form method="post" action="{% url 'cajero:confirm_withdrawal' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="amount">Monto:</label>
+            {{ form.amount }}
+        </div>
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Confirmar retiro</button>
+    </form>
+</div>
+{% endblock content %}

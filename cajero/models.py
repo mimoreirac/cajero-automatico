@@ -126,7 +126,7 @@ class Cuentas(models.Model):
         db_table = 'cuentas'
 
     def __str__(self):
-        return f"CUENTA {self.tipo_cuenta} {self.numero_cuenta}" if self.numero_cuenta else f"Account {self.cuenta_id}"
+        return f"CUENTA {self.tipo_cuenta} {self.numero_cuenta} SALDO: {self.balance}" if self.numero_cuenta else f"Account {self.cuenta_id}"
     
     def save(self, *args, **kwargs):
         if not self.numero_cuenta:
