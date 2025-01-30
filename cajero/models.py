@@ -8,6 +8,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models import Max
+from django.contrib.auth.hashers import make_password, check_password
 
 class AccountNumberSequence:
     @staticmethod
@@ -22,6 +23,20 @@ class AccountNumberSequence:
         numeric_part = int(latest[2:]) + 1
         # Format back to 10 digits (2 digit prefix + 8 digit number)
         return f'01{numeric_part:08d}'
+
+class CardNumberSequence:
+    @staticmethod
+    def get_next_card_number():
+        # Get the latest card number from the database
+        latest = Tarjetas.objects.aggregate(Max('numero_tarjeta'))['numero_tarjeta__max']
+        if not latest:
+            # If no accounts exist, start with 0100000001
+            return '5100000000000001'
+        
+        # Extract the numeric part and increment
+        numeric_part = int(latest[2:]) + 1
+        # Format back to 16 digits (2 digit prefix + 14 digit number)
+        return f'51{numeric_part:014d}'
 
 def validate_cedula(cedula):
     """
@@ -111,7 +126,7 @@ class Cuentas(models.Model):
         db_table = 'cuentas'
 
     def __str__(self):
-        return f"Account {self.numero_cuenta}" if self.numero_cuenta else f"Account {self.cuenta_id}"
+        return f"CUENTA {self.tipo_cuenta} {self.numero_cuenta}" if self.numero_cuenta else f"Account {self.cuenta_id}"
     
     def save(self, *args, **kwargs):
         if not self.numero_cuenta:
@@ -122,17 +137,26 @@ class Cuentas(models.Model):
 
 class Tarjetas(models.Model):
     tarjeta_id = models.AutoField(primary_key=True)
-    client = models.ForeignKey(Clientes, models.DO_NOTHING, blank=True, null=True)
-    cuenta = models.ForeignKey(Cuentas, models.DO_NOTHING, blank=True, null=True)
-    pin = models.CharField(max_length=4)
-    pin_cambiado = models.BooleanField(blank=True, null=True)
+    client = models.ForeignKey(Clientes, models.DO_NOTHING, blank=True, null=False)
+    cuenta = models.ForeignKey(Cuentas, models.DO_NOTHING, blank=True, null=False)
+    pin = models.CharField(max_length=128)
+    pin_cambiado = models.BooleanField(blank=True, null=True, default=False)
+    numero_tarjeta = models.CharField(unique=True, max_length=16, default=CardNumberSequence.get_next_card_number)
 
     class Meta:
         managed = False
         db_table = 'tarjetas'
 
     def __str__(self):
-        return self.tarjeta_id
+        return f"{self.numero_tarjeta}"
+
+    def set_pin(self, raw_pin):
+        """Hash the PIN before storing it"""
+        self.pin = make_password(raw_pin)
+
+    def check_pin(self, raw_pin):
+        """Verify the PIN"""
+        return check_password(raw_pin, self.pin)
     
 
 
