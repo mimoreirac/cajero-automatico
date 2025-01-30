@@ -118,16 +118,19 @@ $$;
 
 -- Depósitos
 
-CREATE OR REPLACE PROCEDURE deposito(cuenta_id INT, monto NUMERIC) 
+CREATE OR REPLACE PROCEDURE deposito(p_cuenta_id INT, monto NUMERIC)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    UPDATE cuentas SET balance = balance + monto WHERE cuenta_id = cuenta_id;
-
+    UPDATE cuentas 
+    SET balance = balance + monto 
+    WHERE cuenta_id = p_cuenta_id;
+    
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
-    VALUES (cuenta_id, 6, monto);
+    VALUES (p_cuenta_id, 6, monto);
 END;
 $$;
+
 
 -- Pagos
 
