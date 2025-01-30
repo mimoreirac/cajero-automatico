@@ -140,7 +140,7 @@ $$;
 
 -- Pagos
 
-CREATE OR REPLACE PROCEDURE pagos(cuenta_id INT, servicio TEXT, monto NUMERIC)
+CREATE OR REPLACE PROCEDURE pagos(p_cuenta_id INT, p_servicio INT, monto NUMERIC)
 LANGUAGE plpgsql
 AS $$
 BEGIN
