@@ -107,13 +107,14 @@ def confirm_withdrawal(request):
             try:
                 with connection.cursor() as cursor:
                     cursor.execute('CALL retiro(%s, %s);', [tarjeta.tarjeta_id, amount])
-            except Exception as e:
-                messages.error(request, str(e))
-                return render(request, 'retiro_confirmar.html', {'form': form, 'card_number': card_number})
-
-            del request.session['card_number']
-            return render(request, 'transaccion_exitosa.html', {'amount': amount})
                 
+                del request.session['card_number']
+                return render(request, 'transaccion_exitosa.html', {'amount': amount})
+                
+            except Exception as e:
+                # Add the error to the form instead of using messages
+                form.add_error('amount', f'Error en la transacción: {str(e)}')
+                return render(request, 'retiro_confirmar.html', {'form': form, 'card_number': card_number})
 
     else:
         form = WithdrawalAmountForm()
@@ -175,7 +176,8 @@ def confirm_payment(request):
                 return render(request, 'transaccion_exitosa.html', {'amount': amount})
                 
             except Exception as e:
-                messages.error(request, f'Error en la transacción: {str(e)}')
+                # Add the error to the form instead of using messages
+                form.add_error('amount', f'Error en la transacción: {str(e)}')
                 servicio_nombre = dict(PaymentServiceForm.SERVICIO_CHOICES).get(int(servicio))
                 return render(request, 'pago_confirmar.html', {
                     'form': form, 
