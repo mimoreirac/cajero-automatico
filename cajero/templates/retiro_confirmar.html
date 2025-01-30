@@ -1,23 +1,28 @@
 {% extends 'base.html' %}
 {% block title %}Confirmar Retiro{% endblock title %}
 {% load static %}
+{% load widget_tweaks %}
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Confirmar Retiro</h2>
-    <p>Número de Tarjeta: {{ card_number }}</p>
-
-    <form method="post" action="{% url 'cajero:confirm_withdrawal' %}">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="amount">Monto:</label>
-            {{ form.amount }}
+    <div class="form-container">
+        <h2 class="mb-4 text-center">Confirmar Retiro</h2>
+        <div class="info-text">
+            <p class="mb-0"><strong>Número de Tarjeta:</strong> {{ card_number }}</p>
         </div>
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                {{ form.errors }}
+
+        <form method="post" action="{% url 'cajero:confirm_withdrawal' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="amount">Monto:</label>
+                {{ form.amount|add_class:"form-control" }}
             </div>
-        {% endif %}
-        <button type="submit" class="btn btn-primary">Confirmar retiro</button>
-    </form>
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">Confirmar retiro</button>
+        </form>
+    </div>
 </div>
 {% endblock content %}

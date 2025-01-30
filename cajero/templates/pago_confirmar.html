@@ -1,25 +1,30 @@
 {% extends 'base.html' %}
 {% block title %}Confirmar Pago{% endblock title %}
 {% load static %}
+{% load widget_tweaks %}
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Confirmar Pago</h2>
-    <p>Servicio: {{ servicio_nombre }}</p>
-    <p>Número de Cuenta: {{ cuenta_id }}</p>
-    <p>Cédula: {{ cedula }}</p>
-
-    <form method="post" action="{% url 'cajero:confirm_payment' %}">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="amount">Monto:</label>
-            {{ form.amount }}
+    <div class="form-container">
+        <h2 class="mb-4 text-center">Confirmar Pago</h2>
+        <div class="info-text">
+            <p class="mb-1"><strong>Servicio:</strong> {{ servicio_nombre }}</p>
+            <p class="mb-1"><strong>Número de Cuenta:</strong> {{ cuenta_id }}</p>
+            <p class="mb-0"><strong>Cédula:</strong> {{ cedula }}</p>
         </div>
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                {{ form.errors }}
+
+        <form method="post" action="{% url 'cajero:confirm_payment' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="amount">Monto:</label>
+                {{ form.amount|add_class:"form-control" }}
             </div>
-        {% endif %}
-        <button type="submit" class="btn btn-primary">Confirmar Pago</button>
-    </form>
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">Confirmar Pago</button>
+        </form>
+    </div>
 </div>
 {% endblock content %}
