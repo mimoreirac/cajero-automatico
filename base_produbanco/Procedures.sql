@@ -151,11 +151,11 @@ BEGIN
     IF balance_actual < monto THEN
         RAISE EXCEPTION 'Fondos insuficientes';
     END IF;
-    
-    UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = cuenta_id;
+
+    UPDATE cuentas SET balance = balance - monto WHERE cuenta_id = p_cuenta_id;
 
     INSERT INTO transacciones (cuenta_id, tipo_transaccion, monto)
-    VALUES (cuenta_id, 7, monto);
+    VALUES (p_cuenta_id, 7, monto);
 END;
 $$;
 
