@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Transacción Exitosa{% endblock title %}
+{% load static %}
+{% block content %}
+<!-- Meta refresh for auto-redirect after 10 seconds -->
+<meta http-equiv="refresh" content="10;url={% url 'cajero:index' %}">
+
+<div class="container mt-5">
+    <div class="text-center">
+        <i class="fa-solid fa-circle-check fa-5x mb-4" style="color: #34b539"></i>
+        <h2 class="mb-3">¡Transacción Exitosa!</h2>
+        <p class="lead mb-4">Su transacción ha sido procesada correctamente.</p>
+        {% if amount %}
+            <p class="h4 mb-4">Monto: ${{ amount }}</p>
+        {% endif %}
+        <p class="text-muted">Será redirigido a la página principal en 10 segundos...</p>
+        <a href="{% url 'cajero:index' %}" class="btn btn-primary mt-3">Volver al Inicio</a>
+    </div>
+</div>
+{% endblock content %}

@@ -60,7 +60,7 @@ def confirm_deposit(request):
 
             del request.session['cuenta_id']
             del request.session['cedula']
-            return redirect('cajero:index')  # Necesito una pagina de transaccion exitosa.
+            return render(request, 'transaccion_exitosa.html', {'amount': amount})
 
     else:
         form = DepositAmountForm()
@@ -112,7 +112,8 @@ def confirm_withdrawal(request):
                 return render(request, 'retiro_confirmar.html', {'form': form, 'card_number': card_number})
 
             del request.session['card_number']
-            return redirect('cajero:index')  # Redirect to success page or index
+            return render(request, 'transaccion_exitosa.html', {'amount': amount})
+                
 
     else:
         form = WithdrawalAmountForm()
@@ -171,7 +172,7 @@ def confirm_payment(request):
                 del request.session['servicio']
                 del request.session['cedula']
                 del request.session['cuenta_id']
-                return redirect('cajero:index')
+                return render(request, 'transaccion_exitosa.html', {'amount': amount})
                 
             except Exception as e:
                 messages.error(request, f'Error en la transacción: {str(e)}')
